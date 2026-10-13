@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
 
 # Page configuration
 st.set_page_config(page_title="Executive Sales & Analytics Dashboard", layout="wide")
@@ -42,20 +41,24 @@ col4.metric("Active Regions", len(region))
 
 st.markdown("---")
 
-# Charts
+# Charts using stable native Streamlit components
 chart_col1, chart_col2 = st.columns(2)
 
 with chart_col1:
     st.subheader("Revenue Trend Over Time")
-    revenue_trend = filtered_data.groupby("Date")["Revenue"].sum().reset_index()
-    fig1 = px.line(revenue_trend, x="Date", y="Revenue", title="Daily Revenue Trend")
-    st.plotly_chart(fig1, use_container_width=True)
+    if not filtered_data.empty:
+        revenue_trend = filtered_data.groupby("Date")["Revenue"].sum()
+        st.line_chart(revenue_trend)
+    else:
+        st.info("No data available for selected filters.")
 
 with chart_col2:
     st.subheader("Revenue by Product Category")
-    category_revenue = filtered_data.groupby("Category")["Revenue"].sum().reset_index()
-    fig2 = px.pie(category_revenue, values="Revenue", names="Category", hole=0.4, title="Revenue Distribution")
-    st.plotly_chart(fig2, use_container_width=True)
+    if not filtered_data.empty:
+        category_revenue = filtered_data.groupby("Category")["Revenue"].sum()
+        st.bar_chart(category_revenue)
+    else:
+        st.info("No data available for selected filters.")
 
 # Data Table
 st.subheader("Recent Transactions")
